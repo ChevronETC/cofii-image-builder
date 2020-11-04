@@ -1,7 +1,9 @@
 name: AzureImages
+
 on:
   push:
     - tags: *
+
 jobs:
   build:
     steps:
