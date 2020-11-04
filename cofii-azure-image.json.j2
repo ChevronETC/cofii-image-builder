@@ -1,0 +1,189 @@
+{
+  "builders":
+  [
+    {
+      "subscription_id": "{{ SUBSCRIPTION_ID }}",
+      "tenant_id": "{{ TENANT_ID }}",
+      "client_id": "{{ CLIENT_ID }}",
+      "client_secret": "{{ CLIENT_SECRET }}",
+      "type": "azure-arm",
+      "os_type": "Linux",
+      "vm_size": "Standard_D8s_v3",
+      "image_publisher": "canonical",
+      "image_offer": "0001-com-ubuntu-server-focal",
+      "image_sku": "20_04-lts",
+      "shared_image_gallery_destination": {
+        "resource_group": "{{ RESOURCE_GROUP }}",
+        "gallery_name": "{{ GALLERY_NAME }}",
+        "image_name": "{{ IMAGE_NAME }}",
+        "image_version": "{{ VERSION_NUMBER }}",
+        "replication_regions": ["South Central US"]
+      },
+      "azure_tags": {
+        "dateCreated": "{{ DATE_TAG }}"
+      },      
+      "build_resource_group_name": "{{ RESOURCE_GROUP }}",
+      "managed_image_resource_group_name": "{{ RESOURCE_GROUP }}",
+      "managed_image_name": "{{ IMAGE_NAME }}",
+      "managed_image_storage_account_type": "Premium_LRS",
+      "virtual_network_name":"{{ VIRTUAL_NETWORK }}",
+      "virtual_network_subnet_name": "{{ VIRTUAL_NETWORK_SUBNET }}",
+      "virtual_network_resource_group_name": "{{ RESOURCE_GROUP }}",
+      "private_virtual_network_with_public_ip": true,
+      "ssh_username": "cofii"
+    }
+  ],
+  "provisioners":
+  [
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"Host *\" > ~/.ssh/config",
+        "echo \"    StrictHostKeyChecking    no\" >> ~/.ssh/config",
+        "echo \"    LogLevel                 ERROR\" >> ~/.ssh/config",
+        "echo \"    UserKnownHostsFile       /dev/null\" >> ~/.ssh/config",
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "sudo apt-get -y update",
+        "sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::=\"--force-confdef\" -o Dpkg::Options::=\"--force-confold\" upgrade",
+        "sudo apt-get -y install build-essential mpich libcurl4-openssl-dev emacs-nox nodejs npm git vim",
+        "sudo sed -i '1 i *     soft    nofile  1000000' /etc/security/limits.conf",
+        "sudo sed -i '1 i *     hard    nofile  1000000' /etc/security/limits.conf",
+        "sudo sed -i '1 i fs.inotify.max_user_watches=65536' /etc/sysctl.conf",
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"miniconda install\"",
+        "cd /tmp",
+        "wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh",
+        "cd",
+        "sudo bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda",
+        "sudo rm /tmp/Miniconda3-latest-Linux-x86_64.sh",
+        "export PATH=\"/opt/miniconda/bin:${PATH}\"",
+        "sudo mkdir -p ~/.conda/envs",
+        "sudo chmod -R 2775 ~/.conda",
+        "sudo chown -R 1000:1001 -R ~/.conda",
+        "conda create -y -n conda_jl python conda",
+        "echo \"export CONDA_JL_HOME=\"~/.conda/envs/conda_jl\"\" >> ~/.bashrc",
+        "export CONDA_JL_HOME=\"~/.conda/envs/conda_jl\"",
+        "echo \"export PATH=\"~/.conda/envs/conda_jl/bin:${PATH}\"\" >> ~/.bashrc",
+        "export PATH=\"~/.conda/envs/conda_jl/bin:${PATH}\"",
+        "rm -f ~/.condarc",
+        "echo \"channels:\" >> ~/.condarc",
+        "echo \"  - https://repo.anaconda.com/pkgs/main\" >> ~/.condarc"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"installing Julia\"",
+        "sudo mkdir -p /opt/julia",
+        "cd /tmp",
+        "wget https://julialang-s3.julialang.org/bin/linux/x64/{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}/julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz
+        "sudo tar --strip-components=1 -xzvf julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz -C /opt/julia",
+        "rm julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz",
+        "cd",
+        "sed -i '1 i export JULIA_EDITOR=\"vim\"' .bashrc",
+        "sed -i '1 i export PATH=\"${PATH}:/opt/julia/bin\"' .bashrc",
+        "sed -i '1 i export JULIA_WORKER_TIMEOUT=\"720\"' .bashrc",
+        "export PATH=\"${PATH}:/opt/julia/bin\""
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"jupyter install\"",
+        "julia -e 'using Pkg; pkg\"add Conda\"'",
+        "julia -e 'using Conda; Conda.add(\"jupyter\"); Conda.add(\"jupyterlab\"); Conda.add(\"matplotlib\")'",
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"installing julia packages\"",
+        "export CONDA_BINDIR=`julia -E 'using Conda; Conda.BINDIR'`",
+        "export JUPYTER=\"${CONDA_BINDIR}/jupyter\",
+        "export PYTHON=\"${CONDA_BINDIR}/python3\",
+        "export JULIA_MPI_BINARY=\"system\"",
+        "julia -e 'using Pkg; pkg\"add AbstractStorage AzManagers AzSessions AzStorage\"'",
+        "julia -e 'using Pkg; pkg\"add Base64 BenchmarkTools BinaryProvider\"'",
+        "julia -e 'using Pkg; pkg\"add CRC32c CloudSeis CvxCompress\"'",
+        "julia -e 'using Pkg; pkg\"add DSP Dates Devito Distributed DistributedArrays DistributedJets DistributedOperations\"'",
+        "julia -e 'using Pkg; pkg\"add FFTW FolderStorage\"'",
+        "julia -e 'using Pkg; pkg\"add HTTP\"'",
+        "julia -e 'using Pkg; pkg\"add Interpolations IJulia\"'",
+        "julia -e 'using Pkg; pkg\"add JSON JetPack JetPackDSP JetPackTransforms JetPackWaveFD Jets\"'",
+        "julia -e 'using Pkg; pkg\"add LineSearches LinearAlgebra\"'",
+        "julia -e 'using Pkg; pkg\"add MPI MPIClusterManagers MbedTLS\"'",
+        "julia -e 'using Pkg; pkg\"add Optim\"'",
+        "julia -e 'using Pkg; pkg\"add PlotlyJS Plots Printf PyPlot\"'",
+        "julia -e 'using Pkg; pkg\"add Random Revise\"'",
+        "julia -e 'using Pkg; pkg\"add Serialization SparseArrays SpecialFunctions Statistics Strided Schedulers\"'",
+        "julia -e 'using Pkg; pkg\"add TeaSeis\"'",
+        "julia -e 'using Pkg; pkg\"add UUIDs\"'",
+        "julia -e 'using Pkg; pkg\"add WaveFD WebIO\"'"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"configuring jupyter\"",
+        "rm -f ~/.jupyter/jupyter_notebook_config.py",
+        "julia -e 'using IJulia;run(`$(IJulia.JUPYTER) notebook --generate-config`)'"
+        "echo \"import requests\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"import json\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"_r = requests.get('http://169.254.169.254/metadata/instance/network/interface?api-version=2017-08-01', headers={'Metadata': 'true'})\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"r = json.loads(_r.text)\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"ip = r[0]['ipv4']['ipAddress'][0]['privateIpAddress']\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"c=get_config()\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.ip = ip\" >> ~/.jupyter/jupyter_notebook_config.py"
+        "echo \"c.NotebookApp.open_browser = False\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.port = 5000\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.custom_display_url = 'http://'+ip+':5000'\" >> ~/.jupyter/jupyter_notebook_config.py",
+        "mv ~/.jupyter/jupyter_notebook_config.py ~/.jupyter/jupyter_config.py",
+        "rm -f ~/.jupyter/jupyter_notebook_config.json",
+        "x=`julia -e 'using IJulia;print(IJulia.JUPYTER)'`; echo \"alias jupyter='$x'\" >> .bashrc"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "julia -e 'using Pkg; pkg\"precompile\"'"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline":
+      [
+        "echo \"installing julia vim and emacs plug-ins\"",
+        "git clone https://github.com/JuliaEditorSupport/julia-vim.git",
+        "cd julia-vim",
+        "mkdir -p ~/.vim",
+        "cp -R * ~/.vim",
+        "cd",
+        "rm -rf julia-vim",
+        "echo \"au FileType julia setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab\" > .vimrc",
+        "echo \"au FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab\" >> .vimrc",
+        "mkdir -p ~/.emacs.d/lisp",
+        "git clone https://github.com/JuliaEditorSupport/julia-emacs.git /tmp/julia-emacs",
+        "cp /tmp/julia-emacs/julia-mode.el ~/.emacs.d/lisp/julia-mode.el",
+        "rm -rf /tmp/julia-emacs",
+        "echo \"(add-to-list 'load-path \\\"~/.emacs.d/lisp\\\")\" > .emacs",
+        "echo \"(require 'julia-mode)\" >> .emacs"
+      ]
+    }
+  ]
+}

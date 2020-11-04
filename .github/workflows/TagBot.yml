@@ -1,0 +1,11 @@
+name: TagBot
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"
+
+jobs:
+  build:
+    steps:
+    - uses: actions/checkout@v1.0.0
+    - uses: mydea/action-tag-date-version@v20
