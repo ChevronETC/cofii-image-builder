@@ -42,7 +42,7 @@
         "echo \"Host *\" > ~/.ssh/config",
         "echo \"    StrictHostKeyChecking    no\" >> ~/.ssh/config",
         "echo \"    LogLevel                 ERROR\" >> ~/.ssh/config",
-        "echo \"    UserKnownHostsFile       /dev/null\" >> ~/.ssh/config",
+        "echo \"    UserKnownHostsFile       /dev/null\" >> ~/.ssh/config"
       ]
     },
     {
@@ -54,7 +54,7 @@
         "sudo apt-get -y install build-essential mpich libcurl4-openssl-dev emacs-nox nodejs npm git vim",
         "sudo sed -i '1 i *     soft    nofile  1000000' /etc/security/limits.conf",
         "sudo sed -i '1 i *     hard    nofile  1000000' /etc/security/limits.conf",
-        "sudo sed -i '1 i fs.inotify.max_user_watches=65536' /etc/sysctl.conf",
+        "sudo sed -i '1 i fs.inotify.max_user_watches=65536' /etc/sysctl.conf"
       ]
     },
     {
@@ -88,7 +88,7 @@
         "echo \"installing Julia\"",
         "sudo mkdir -p /opt/julia",
         "cd /tmp",
-        "wget https://julialang-s3.julialang.org/bin/linux/x64/{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}/julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz
+        "wget https://julialang-s3.julialang.org/bin/linux/x64/{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}/julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz",
         "sudo tar --strip-components=1 -xzvf julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz -C /opt/julia",
         "rm julia-{{ JULIA_MAJOR_VERSION }}.{{ JULIA_MINOR_VERSION }}.{{ JULIA_PATCH_VERSION }}-linux-x86_64.tar.gz",
         "cd",
@@ -104,7 +104,7 @@
       [
         "echo \"jupyter install\"",
         "julia -e 'using Pkg; pkg\"add Conda\"'",
-        "julia -e 'using Conda; Conda.add(\"jupyter\"); Conda.add(\"jupyterlab\"); Conda.add(\"matplotlib\")'",
+        "julia -e 'using Conda; Conda.add(\"jupyter\"); Conda.add(\"jupyterlab\"); Conda.add(\"matplotlib\")'"
       ]
     },
     {
@@ -113,8 +113,8 @@
       [
         "echo \"installing julia packages\"",
         "export CONDA_BINDIR=`julia -E 'using Conda; Conda.BINDIR'`",
-        "export JUPYTER=\"${CONDA_BINDIR}/jupyter\",
-        "export PYTHON=\"${CONDA_BINDIR}/python3\",
+        "export JUPYTER=\"${CONDA_BINDIR}/jupyter\"",
+        "export PYTHON=\"${CONDA_BINDIR}/python3\"",
         "export JULIA_MPI_BINARY=\"system\"",
         "julia -e 'using Pkg; pkg\"add AbstractStorage AzManagers AzSessions AzStorage\"'",
         "julia -e 'using Pkg; pkg\"add Base64 BenchmarkTools BinaryProvider\"'",
@@ -141,14 +141,14 @@
       [
         "echo \"configuring jupyter\"",
         "rm -f ~/.jupyter/jupyter_notebook_config.py",
-        "julia -e 'using IJulia;run(`$(IJulia.JUPYTER) notebook --generate-config`)'"
+        "julia -e 'using IJulia;run(`$(IJulia.JUPYTER) notebook --generate-config`)'",
         "echo \"import requests\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"import json\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"_r = requests.get('http://169.254.169.254/metadata/instance/network/interface?api-version=2017-08-01', headers={'Metadata': 'true'})\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"r = json.loads(_r.text)\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"ip = r[0]['ipv4']['ipAddress'][0]['privateIpAddress']\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"c=get_config()\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c.NotebookApp.ip = ip\" >> ~/.jupyter/jupyter_notebook_config.py"
+        "echo \"c.NotebookApp.ip = ip\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"c.NotebookApp.open_browser = False\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"c.NotebookApp.port = 5000\" >> ~/.jupyter/jupyter_notebook_config.py",
         "echo \"c.NotebookApp.custom_display_url = 'http://'+ip+':5000'\" >> ~/.jupyter/jupyter_notebook_config.py",
