@@ -7,36 +7,36 @@ on:
 jobs:
   build:
     steps:
-      - uses: actions/checkout@v1.0.0
-      - name: Get the image version
-        id: get_version
-        run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-      - name: Get the date
-        id: get_date
-        run: echo ::set-output name=DATE_TAG::$(date +'%Y-%m-%d')
-      - name: Template the packer file
-        uses: cuchi/jinja2-action@v1.2.0
-        template: cofii-azure-image.json.j2
-        output_file: cofii-azure-image.json
-        env:
-          CLIENT_ID: "${{ secrets.CLIENT_ID }}"
-          CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
-          DATE_TAG: ${{ steps.get_date.outputs.DATE_TAG }}
-          GALLERY_NAME: "cofii"
-          IMAGE_NAME: "cofii"
-          JULIA_VERSION_MAJOR: "1"
-          JULIA_VERSION_MINOR: "5"
-          JULIA_VERSION_PATH: "2"
-          RESOURCE_GROUP: "cofii-image"
-          SUBSCRIPTION_ID: "${{ secrets.SUBSCRIPTION_ID }}"
-          TENANT_ID: "${{ secrets.TENANT_ID }}"
-          VERSION_NUMBER: "${{ steps.get_version.outputs.SOURCE_TAG }}"
-          VIRTUAL_NETWORK: "${{ matrix.os }}-${{ matrix.julia-version }}-${{ github.run_id }}-vnet"
-          VIRTUAL_NETWORK_SUBNET: "default"
-      - name: Install Packer
-        run: |
-          curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-          sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-          sudo apt-get update && sudo apt-get install packer
-      - name: Build image
-        run: packer build -color=false ${{ GITHUB_WORKSPACE }}/cofii-azure-image.json
+    - uses: actions/checkout@v1.0.0
+    - name: Get the image version
+      id: get_version
+      run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+    - name: Get the date
+      id: get_date
+      run: echo ::set-output name=DATE_TAG::$(date +'%Y-%m-%d')
+    - name: Template the packer file
+      uses: cuchi/jinja2-action@v1.2.0
+      template: cofii-azure-image.json.j2
+      output_file: cofii-azure-image.json
+      env:
+        CLIENT_ID: "${{ secrets.CLIENT_ID }}"
+        CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
+        DATE_TAG: ${{ steps.get_date.outputs.DATE_TAG }}
+        GALLERY_NAME: "cofii"
+        IMAGE_NAME: "cofii"
+        JULIA_VERSION_MAJOR: "1"
+        JULIA_VERSION_MINOR: "5"
+        JULIA_VERSION_PATH: "2"
+        RESOURCE_GROUP: "cofii-image"
+        SUBSCRIPTION_ID: "${{ secrets.SUBSCRIPTION_ID }}"
+        TENANT_ID: "${{ secrets.TENANT_ID }}"
+        VERSION_NUMBER: "${{ steps.get_version.outputs.SOURCE_TAG }}"
+        VIRTUAL_NETWORK: "${{ matrix.os }}-${{ matrix.julia-version }}-${{ github.run_id }}-vnet"
+        VIRTUAL_NETWORK_SUBNET: "default"
+    - name: Install Packer
+      run: |
+        curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+        sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+        sudo apt-get update && sudo apt-get install packer
+    - name: Build image
+      run: packer build -color=false ${{ GITHUB_WORKSPACE }}/cofii-azure-image.json
