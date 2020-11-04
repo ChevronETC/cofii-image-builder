@@ -15,10 +15,10 @@ jobs:
     - name: Get the date
       id: get_date
       run: echo ::set-output name=DATE_TAG::$(date +'%Y-%m-%d')
-    - name: Template the packer file
-      uses: cuchi/jinja2-action@v1.2.0
-      template: cofii-azure-image.json.j2
-      output_file: cofii-azure-image.json
+    - uses: cuchi/jinja2-action@v1.2.0
+      with:
+        template: cofii-azure-image.json.j2
+        output_file: cofii-azure-image.json
       env:
         CLIENT_ID: "${{ secrets.CLIENT_ID }}"
         CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
