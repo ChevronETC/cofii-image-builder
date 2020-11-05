@@ -16,28 +16,13 @@ jobs:
     - name: Get the date
       id: get_date
       run: echo ::set-output name=DATE_TAG::$(date +'%Y-%m-%d')
-    - name: debug env
-      run: env
-      env:
-        CLIENT_ID: "7f4e2cd1-20a8-47fd-ab49-d3df30121c9a"
-        CLIENT_SECRET: "foobar"
-        DATE_TAG: "${{ steps.get_date.outputs.DATE_TAG }}"
-        GALLERY_NAME: "cofii"
-        IMAGE_NAME: "cofii"
-        JULIA_MAJOR_VERSION: "1"
-        JULIA_MINOR_VERSION: "5"
-        JULIA_PATCH_VERSION: "2"
-        RESOURCE_GROUP: "cofii-image"
-        SUBSCRIPTION_ID: "461a0ce0-0ca0-44fa-b7d0-29bb0711dadc"
-        TENANT_ID: "chevron.onmicrosoft.com"
-        VERSION_NUMBER: "${{ steps.get_version.outputs.SOURCE_TAG }}"
     - uses: cuchi/jinja2-action@v1.2.0
       with:
         template: cofii-azure-image.json.j2
         output_file: cofii-azure-image.json
       env:
         CLIENT_ID: "7f4e2cd1-20a8-47fd-ab49-d3df30121c9a"
-        CLIENT_SECRET: "foobar"
+        CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
         DATE_TAG: "${{ steps.get_date.outputs.DATE_TAG }}"
         GALLERY_NAME: "cofii"
         IMAGE_NAME: "cofii"
@@ -48,8 +33,6 @@ jobs:
         SUBSCRIPTION_ID: "461a0ce0-0ca0-44fa-b7d0-29bb0711dadc"
         TENANT_ID: "chevron.onmicrosoft.com"
         VERSION_NUMBER: "${{ steps.get_version.outputs.SOURCE_TAG }}"
-    - name: debug jinja output
-      run: cat cofii-azure-image.json
     - name: Install Packer
       run: |
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
