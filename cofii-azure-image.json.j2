@@ -35,10 +35,10 @@
       "type": "shell",
       "inline":
       [
-        "echo \"Host *\" > ~/.ssh/config",
-        "echo \"    StrictHostKeyChecking    no\" >> ~/.ssh/config",
-        "echo \"    LogLevel                 ERROR\" >> ~/.ssh/config",
-        "echo \"    UserKnownHostsFile       /dev/null\" >> ~/.ssh/config"
+        "echo \"Host *\" > ${HOME}/.ssh/config",
+        "echo \"    StrictHostKeyChecking    no\" >> ${HOME}/.ssh/config",
+        "echo \"    LogLevel                 ERROR\" >> ${HOME}/.ssh/config",
+        "echo \"    UserKnownHostsFile       /dev/null\" >> ${HOME}/.ssh/config"
       ]
     },
     {
@@ -64,17 +64,17 @@
         "sudo bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda",
         "sudo rm /tmp/Miniconda3-latest-Linux-x86_64.sh",
         "export PATH=\"/opt/miniconda/bin:${PATH}\"",
-        "sudo mkdir -p ~/.conda/envs",
-        "sudo chmod -R 2775 ~/.conda",
-        "sudo chown -R 1000:1001 -R ~/.conda",
+        "sudo mkdir -p ${HOME}/.conda/envs",
+        "sudo chmod -R 2775 ${HOME}/.conda",
+        "sudo chown -R 1000:1001 -R ${HOME}/.conda",
         "conda create -y -n conda_jl python conda",
-        "echo \"export CONDA_JL_HOME=\"~/.conda/envs/conda_jl\"\" >> ~/.bashrc",
-        "export CONDA_JL_HOME=\"~/.conda/envs/conda_jl\"",
-        "echo \"export PATH=\"~/.conda/envs/conda_jl/bin:${PATH}\"\" >> ~/.bashrc",
-        "export PATH=\"~/.conda/envs/conda_jl/bin:${PATH}\"",
-        "rm -f ~/.condarc",
-        "echo \"channels:\" >> ~/.condarc",
-        "echo \"  - https://repo.anaconda.com/pkgs/main\" >> ~/.condarc"
+        "echo \"export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"\" >> ${HOME}/.bashrc",
+        "export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"",
+        "echo \"export PATH=\"${HOME}/.conda/envs/conda_jl/bin:${PATH}\"\" >> ${HOME}/.bashrc",
+        "export PATH=\"${HOME}/.conda/envs/conda_jl/bin:${PATH}\"",
+        "rm -f ${HOME}/.condarc",
+        "echo \"channels:\" >> ${HOME}/.condarc",
+        "echo \"  - https://repo.anaconda.com/pkgs/main\" >> ${HOME}/.condarc"
       ]
     },
     {
@@ -136,20 +136,20 @@
       "inline":
       [
         "echo \"configuring jupyter\"",
-        "rm -f ~/.jupyter/jupyter_notebook_config.py",
+        "rm -f ${HOME}/.jupyter/jupyter_notebook_config.py",
         "julia -e 'using IJulia;run(`$(IJulia.JUPYTER) notebook --generate-config`)'",
-        "echo \"import requests\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"import json\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"_r = requests.get('http://169.254.169.254/metadata/instance/network/interface?api-version=2017-08-01', headers={'Metadata': 'true'})\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"r = json.loads(_r.text)\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"ip = r[0]['ipv4']['ipAddress'][0]['privateIpAddress']\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c=get_config()\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c.NotebookApp.ip = ip\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c.NotebookApp.open_browser = False\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c.NotebookApp.port = 5000\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "echo \"c.NotebookApp.custom_display_url = 'http://'+ip+':5000'\" >> ~/.jupyter/jupyter_notebook_config.py",
-        "mv ~/.jupyter/jupyter_notebook_config.py ~/.jupyter/jupyter_config.py",
-        "rm -f ~/.jupyter/jupyter_notebook_config.json",
+        "echo \"import requests\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"import json\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"_r = requests.get('http://169.254.169.254/metadata/instance/network/interface?api-version=2017-08-01', headers={'Metadata': 'true'})\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"r = json.loads(_r.text)\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"ip = r[0]['ipv4']['ipAddress'][0]['privateIpAddress']\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"c=get_config()\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.ip = ip\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.open_browser = False\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.port = 5000\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "echo \"c.NotebookApp.custom_display_url = 'http://'+ip+':5000'\" >> ${HOME}/.jupyter/jupyter_notebook_config.py",
+        "mv ${HOME}/.jupyter/jupyter_notebook_config.py ${HOME}/.jupyter/jupyter_config.py",
+        "rm -f ${HOME}/.jupyter/jupyter_notebook_config.json",
         "x=`julia -e 'using IJulia;print(IJulia.JUPYTER)'`; echo \"alias jupyter='$x'\" >> .bashrc"
       ]
     },
@@ -167,17 +167,17 @@
         "echo \"installing julia vim and emacs plug-ins\"",
         "git clone https://github.com/JuliaEditorSupport/julia-vim.git",
         "cd julia-vim",
-        "mkdir -p ~/.vim",
-        "cp -R * ~/.vim",
+        "mkdir -p ${HOME}/.vim",
+        "cp -R * ${HOME}/.vim",
         "cd",
         "rm -rf julia-vim",
         "echo \"au FileType julia setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab\" > .vimrc",
         "echo \"au FileType c setlocal shiftwidth=4 tabstop=4 softtabstop=4 expandtab\" >> .vimrc",
-        "mkdir -p ~/.emacs.d/lisp",
+        "mkdir -p ${HOME}/.emacs.d/lisp",
         "git clone https://github.com/JuliaEditorSupport/julia-emacs.git /tmp/julia-emacs",
-        "cp /tmp/julia-emacs/julia-mode.el ~/.emacs.d/lisp/julia-mode.el",
+        "cp /tmp/julia-emacs/julia-mode.el ${HOME}/.emacs.d/lisp/julia-mode.el",
         "rm -rf /tmp/julia-emacs",
-        "echo \"(add-to-list 'load-path \\\"~/.emacs.d/lisp\\\")\" > .emacs",
+        "echo \"(add-to-list 'load-path \\\"${HOME}/.emacs.d/lisp\\\")\" > .emacs",
         "echo \"(require 'julia-mode)\" >> .emacs"
       ]
     }
