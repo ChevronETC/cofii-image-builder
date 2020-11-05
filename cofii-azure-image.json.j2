@@ -21,8 +21,8 @@
       },
       "azure_tags": {
         "dateCreated": "{{ env['DATE_TAG'] }}"
-      },      
-      "build_resource_group_name": "{{ env['RESOURCE_GROUP'] }}",
+      },
+      "location": "southcentralus",
       "managed_image_resource_group_name": "{{ env['RESOURCE_GROUP'] }}",
       "managed_image_name": "{{ env['IMAGE_NAME'] }}",
       "managed_image_storage_account_type": "Premium_LRS",
@@ -31,6 +31,14 @@
   ],
   "provisioners":
   [
+    {
+      "type": "shell",
+      "inline":
+      [
+        "cat /etc/resolve.conf",
+        "resolvectl --no-pager status"
+      ]
+    },
     {
       "type": "shell",
       "inline":
@@ -66,7 +74,6 @@
         "export PATH=\"/opt/miniconda/bin:${PATH}\"",
         "sudo mkdir -p ${HOME}/.conda/envs",
         "sudo chmod -R 2775 ${HOME}/.conda",
-        "sudo chown -R 1000:1001 -R ${HOME}/.conda",
         "conda create -y -n conda_jl python conda",
         "echo \"export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"\" >> ${HOME}/.bashrc",
         "export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"",
