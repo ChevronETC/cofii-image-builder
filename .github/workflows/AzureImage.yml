@@ -16,21 +16,6 @@ jobs:
     - name: Get the date
       id: get_date
       run: echo ::set-output name=DATE_TAG::$(date +'%Y-%m-%d')
-    - name: qc env
-      run: env
-      env:
-        CLIENT_ID: "${{ secrets.CLIENT_ID }}"
-        CLIENT_SECRET: "${{ secrets.CLIENT_SECRET }}"
-        DATE_TAG: ${{ steps.get_date.outputs.DATE_TAG }}
-        GALLERY_NAME: "cofii"
-        IMAGE_NAME: "cofii"
-        JULIA_MAJOR_VERSION: "1"
-        JULIA_MINOR_VERSION: "5"
-        JULIA_PATCH_VERSION: "2"
-        RESOURCE_GROUP: "cofii-image"
-        SUBSCRIPTION_ID: "${{ secrets.SUBSCRIPTION_ID }}"
-        TENANT_ID: "${{ secrets.TENANT_ID }}"
-        VERSION_NUMBER: "${{ steps.get_version.outputs.SOURCE_TAG }}"
     - uses: cuchi/jinja2-action@v1.2.0
       with:
         template: cofii-azure-image.json.j2
@@ -53,5 +38,6 @@ jobs:
         curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
         sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
         sudo apt-get update && sudo apt-get install packer
+    - uses: csexton/debugger-action@master
     - name: Build image
       run: packer build -color=false ${GITHUB_WORKSPACE}/cofii-azure-image.json
