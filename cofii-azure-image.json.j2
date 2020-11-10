@@ -23,6 +23,7 @@
         "dateCreated": "{{ env['DATE_TAG'] }}"
       },
       "location": "southcentralus",
+      "temp_resource_group_name": "AzureBackupRG-{{ env['GITHUB_ACTION'] }}"
       "managed_image_resource_group_name": "{{ env['RESOURCE_GROUP'] }}",
       "managed_image_name": "{{ env['IMAGE_NAME'] }}",
       "managed_image_storage_account_type": "Premium_LRS",
