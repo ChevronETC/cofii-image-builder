@@ -28,7 +28,7 @@ jobs:
         IMAGE_NAME: "cofii"
         JULIA_MAJOR_VERSION: "1"
         JULIA_MINOR_VERSION: "5"
-        JULIA_PATCH_VERSION: "2"
+        JULIA_PATCH_VERSION: "3"
         RESOURCE_GROUP: "cofii-image"
         SUBSCRIPTION_ID: "461a0ce0-0ca0-44fa-b7d0-29bb0711dadc"
         TENANT_ID: "chevron.onmicrosoft.com"
