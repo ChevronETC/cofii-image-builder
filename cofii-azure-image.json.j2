@@ -36,14 +36,6 @@
       "type": "shell",
       "inline":
       [
-        "cat /etc/resolv.conf",
-        "resolvectl --no-pager status"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline":
-      [
         "echo \"Host *\" > ${HOME}/.ssh/config",
         "echo \"    StrictHostKeyChecking    no\" >> ${HOME}/.ssh/config",
         "echo \"    LogLevel                 ERROR\" >> ${HOME}/.ssh/config",
@@ -73,8 +65,7 @@
         "sudo bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda",
         "sudo rm /tmp/Miniconda3-latest-Linux-x86_64.sh",
         "export PATH=\"/opt/miniconda/bin:${PATH}\"",
-        "sudo mkdir -p ${HOME}/.conda/envs",
-        "sudo chmod -R 2775 ${HOME}/.conda",
+        "mkdir -p ${HOME}/.conda/envs",
         "conda create -y -n conda_jl python conda",
         "echo \"export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"\" >> ${HOME}/.bashrc",
         "export CONDA_JL_HOME=\"${HOME}/.conda/envs/conda_jl\"",
